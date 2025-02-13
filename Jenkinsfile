@@ -4,7 +4,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         SONARQUBE_URL = "https://sonarcloud.io"
         TRUFFLEHOG_PATH = "/usr/local/bin/trufflehog3"
-        JIRA_SITE = "https://derrickweil.atlassian.net"
+        JIRA_SITE = "https://jacquespayne@atlassian.net"
         JIRA_PROJECT = "SCRUM" // Your Jira project key
     }
 
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'AWS_SECRET_ACCESS_KEY' 
+                    credentialsId: 'Jenkins-Server' 
                 ]]) {
                     sh '''
                     echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/derrickSh43/autoScale'
+                git branch: 'main', url: 'https://github.com/jdpayne68/autoscale.git'
             }
         }
 
@@ -33,11 +33,11 @@ pipeline {
         stage('Static Code Analysis (SAST)') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'SONARQUBE_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'sonarqube-api-key', variable: 'SONAR_TOKEN')]) {
                         def scanStatus = sh(script: '''
                             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=derrickSh43_autoScale \
-                            -Dsonar.organization=derricksh43 \
+                            -Dsonar.projectKey=jdpayne68_autoscale \
+                            -Dsonar.organization=Kumo-Solutions \
                             -Dsonar.host.url=${SONARQUBE_URL} \
                             -Dsonar.login=''' + SONAR_TOKEN, returnStatus: true)
 
@@ -54,7 +54,7 @@ pipeline {
         stage('Snyk Security Scan') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'SNYK_AUTH_TOKEN', variable: 'SNYK_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'snyk-api-key', variable: 'SNYK_TOKEN')]) {
                         sh "snyk auth ${SNYK_TOKEN}"
                         sh "snyk monitor || echo 'No supported files found, monitoring skipped.'"
                     }
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'AWS_SECRET_ACCESS_KEY'
+                    credentialsId: 'Jenkins-Server'
                 ]]) {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
@@ -92,7 +92,7 @@ pipeline {
                 input message: "Approve Terraform Apply?", ok: "Deploy"
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'AWS_SECRET_ACCESS_KEY'
+                    credentialsId: 'Jenkins-Server'
                 ]]) {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
