@@ -39,7 +39,7 @@ pipeline {
                             -Dsonar.projectKey=kumo-holdings \
                             -Dsonar.organization=Kumo-Solutions \
                             -Dsonar.host.url=${SONARQUBE_URL} \
-                            -Dsonar.login=''' + SONAR_TOKEN, returnStatus: true)
+                            -Dsonar.token=''' + SONAR_TOKEN, returnStatus: true)
 
                         if (scanStatus != 0) {
                             createJiraTicket("Static Code Analysis Failed", "SonarQube scan detected issues in your code.")
