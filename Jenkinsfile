@@ -5,7 +5,7 @@ pipeline {
         SONARQUBE_URL = "https://sonarcloud.io"
         TRUFFLEHOG_PATH = "/usr/local/bin/trufflehog3"
         JIRA_SITE = "https://jacquespayne@atlassian.net"
-        JIRA_PROJECT = "autoscale" // Your Jira project key
+        JIRA_PROJECT = "JS" // Your Jira project key
     }
 
     stages {
