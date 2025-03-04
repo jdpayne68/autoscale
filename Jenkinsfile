@@ -36,7 +36,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'sonarqube-api-key', variable: 'SONAR_TOKEN')]) {
                         def scanStatus = sh(script: '''
                             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=kumo-holdings \
+                            -Dsonar.projectKey=jdpayne68_autoscale \
                             -Dsonar.organization=Kumo-Solutions \
                             -Dsonar.host.url=${SONARQUBE_URL} \
                             -Dsonar.token=''' + SONAR_TOKEN, returnStatus: true)
